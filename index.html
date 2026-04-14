@@ -1,154 +1,633 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Math Practice</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f0f4ff;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 30px 16px;
-      color: #1e1e2e;
-    }
-    h1 { font-size: 2.4rem; color: #4a6cf7; margin-bottom: 6px; }
-    .subtitle { color: #666; margin-bottom: 28px; font-size: 1rem; }
-    .card {
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 4px 24px rgba(74,108,247,0.10);
-      padding: 32px 36px;
-      max-width: 480px;
-      width: 100%;
-      text-align: center;
-    }
-    .controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 28px; }
-    .controls label { font-size: 0.85rem; color: #555; }
-    .controls select, .controls input[type=range] {
-      border: 1px solid #d0d7ff; border-radius: 8px; padding: 6px 10px;
-      font-size: 0.9rem; background: #f7f8ff;
-    }
-    .group { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    #question { font-size: 2.8rem; font-weight: 700; color: #222; margin: 12px 0 24px; letter-spacing: 1px; }
-    #answer-input {
-      width: 140px; font-size: 1.8rem; text-align: center;
-      border: 2px solid #c4ceff; border-radius: 10px; padding: 8px 12px;
-      outline: none; transition: border-color 0.2s;
-    }
-    #answer-input:focus { border-color: #4a6cf7; }
-    #submit-btn {
-      margin-top: 18px; background: #4a6cf7; color: #fff; border: none;
-      border-radius: 10px; padding: 12px 36px; font-size: 1.1rem;
-      cursor: pointer; transition: background 0.2s, transform 0.1s;
-    }
-    #submit-btn:hover { background: #3550d4; }
-    #submit-btn:active { transform: scale(0.97); }
-    #feedback { margin-top: 16px; font-size: 1.3rem; font-weight: 600; min-height: 32px; }
-    .correct { color: #2db86e; }
-    .wrong { color: #e05252; }
-    .scoreboard { display: flex; justify-content: center; gap: 32px; margin-top: 28px; padding-top: 20px; border-top: 1px solid #eef0ff; }
-    .score-item { text-align: center; }
-    .score-item .val { font-size: 1.8rem; font-weight: 700; color: #4a6cf7; }
-    .score-item .lbl { font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
-    #streak-bar-wrap { background: #eef0ff; border-radius: 8px; height: 10px; margin-top: 14px; overflow: hidden; }
-    #streak-bar { height: 100%; background: linear-gradient(90deg, #4a6cf7, #7c3aed); border-radius: 8px; width: 0%; transition: width 0.4s; }
-    #new-btn {
-      margin-top: 20px; background: transparent; color: #4a6cf7;
-      border: 2px solid #4a6cf7; border-radius: 10px; padding: 8px 24px;
-      font-size: 0.95rem; cursor: pointer; transition: background 0.2s, color 0.2s;
-    }
-    #new-btn:hover { background: #4a6cf7; color: #fff; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>× Tables</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --border: #2a2a3a;
+    --text: #e0e0e8;
+    --text-dim: #6a6a80;
+    --accent: #00e5a0;
+    --accent-dim: #00e5a020;
+    --danger: #ff4466;
+    --danger-dim: #ff446620;
+    --warn: #ffaa33;
+    --warn-dim: #ffaa3320;
+    --blue: #4488ff;
+    --blue-dim: #4488ff20;
+  }
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .app { max-width: 640px; margin: 0 auto; padding: 20px 16px; }
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0; margin-bottom: 24px; border-bottom: 1px solid var(--border);
+  }
+  .header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.4rem; font-weight: 700; letter-spacing: -0.5px;
+  }
+  .header h1 span { color: var(--accent); }
+  .header-actions { display: flex; gap: 8px; }
+  .header-actions button {
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text-dim); padding: 6px 10px; border-radius: 6px;
+    font-family: inherit; font-size: 0.75rem; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .header-actions button:hover { color: var(--text); border-color: var(--text-dim); }
+  .header-actions button.active { color: var(--accent); border-color: var(--accent); background: var(--accent-dim); }
+  .tabs { display: flex; gap: 4px; margin-bottom: 24px; }
+  .tab {
+    flex: 1; padding: 10px; text-align: center; font-size: 0.75rem;
+    font-weight: 500; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer; color: var(--text-dim);
+    transition: all 0.15s; text-transform: uppercase; letter-spacing: 1px;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-color: var(--accent); background: var(--accent-dim); }
+  .drill-area { text-align: center; padding: 32px 0; }
+  .streak-bar {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-bottom: 32px; font-size: 0.75rem; color: var(--text-dim);
+  }
+  .streak-bar .streak-count { color: var(--accent); font-weight: 600; font-size: 0.85rem; }
+  .streak-dots { display: flex; gap: 3px; }
+  .streak-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--border); transition: background 0.3s;
+  }
+  .streak-dot.correct { background: var(--accent); }
+  .streak-dot.wrong { background: var(--danger); }
+  .question {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 3.2rem; font-weight: 700; margin-bottom: 32px;
+    letter-spacing: -1px; line-height: 1;
+  }
+  .question .op { color: var(--accent); margin: 0 4px; }
+  .answer-input {
+    background: var(--surface); border: 2px solid var(--border);
+    color: var(--text); font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.4rem; font-weight: 600; text-align: center;
+    padding: 12px 20px; border-radius: 12px; width: 200px;
+    outline: none; transition: border-color 0.15s;
+    -moz-appearance: textfield;
+  }
+  .answer-input::-webkit-outer-spin-button,
+  .answer-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .answer-input:focus { border-color: var(--accent); }
+  .answer-input.correct { border-color: var(--accent); background: var(--accent-dim); }
+  .answer-input.wrong { border-color: var(--danger); background: var(--danger-dim); }
+  .feedback {
+    margin-top: 20px; font-size: 0.85rem; min-height: 24px;
+    transition: opacity 0.2s;
+  }
+  .feedback.correct-fb { color: var(--accent); }
+  .feedback.slow-fb { color: var(--warn); }
+  .feedback.wrong-fb { color: var(--danger); }
+  .fact-meta {
+    margin-top: 24px; font-size: 0.7rem; color: var(--text-dim);
+    display: flex; justify-content: center; gap: 16px;
+  }
+  .fact-meta span b { color: var(--text); }
+  .stats-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px;
+  }
+  .stat-card .label { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .stat-card .value { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 700; }
+  .stat-card .value.green { color: var(--accent); }
+  .stat-card .value.red { color: var(--danger); }
+  .stat-card .value.yellow { color: var(--warn); }
+  .stat-card .value.blue { color: var(--blue); }
+  .heatmap-section { margin-bottom: 24px; }
+  .heatmap-section h3 {
+    font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 12px;
+  }
+  .heatmap-container { overflow-x: auto; padding-bottom: 8px; }
+  .heatmap {
+    display: grid; gap: 2px; width: fit-content; min-width: 100%;
+  }
+  .hm-cell {
+    width: 28px; height: 28px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.55rem; color: transparent; transition: all 0.15s;
+    cursor: default; position: relative;
+  }
+  .hm-cell:hover { color: var(--text); z-index: 1; transform: scale(1.3); }
+  .hm-cell.unseen { background: var(--surface); }
+  .hm-cell.mastered { background: #00e5a044; }
+  .hm-cell.good { background: #00e5a028; }
+  .hm-cell.learning { background: #ffaa3330; }
+  .hm-cell.struggling { background: #ff446630; }
+  .hm-header {
+    width: 28px; height: 28px; display: flex; align-items: center;
+    justify-content: center; font-size: 0.6rem; color: var(--text-dim);
+    font-weight: 600;
+  }
+  .weak-list { margin-bottom: 24px; }
+  .weak-list h3 {
+    font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 12px;
+  }
+  .weak-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; margin-bottom: 4px; font-size: 0.8rem;
+  }
+  .weak-item .fact { font-weight: 600; }
+  .weak-item .detail { color: var(--text-dim); font-size: 0.7rem; }
+  .weak-item .pct { font-weight: 600; }
+  .weak-item .pct.bad { color: var(--danger); }
+  .weak-item .pct.ok { color: var(--warn); }
+  .settings-section { margin-bottom: 24px; }
+  .settings-section h3 {
+    font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 12px;
+  }
+  .setting-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; margin-bottom: 6px;
+  }
+  .setting-row label { font-size: 0.8rem; }
+  .setting-row input[type="number"] {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); font-family: inherit; font-size: 0.85rem;
+    padding: 6px 10px; border-radius: 6px; width: 70px; text-align: center;
+    outline: none;
+  }
+  .setting-row input[type="number"]:focus { border-color: var(--accent); }
+  .btn-danger {
+    background: var(--danger-dim); border: 1px solid var(--danger);
+    color: var(--danger); padding: 10px 20px; border-radius: 8px;
+    font-family: inherit; font-size: 0.8rem; cursor: pointer;
+    transition: all 0.15s; width: 100%; margin-top: 12px;
+  }
+  .btn-danger:hover { background: var(--danger); color: var(--bg); }
+  .empty-state {
+    text-align: center; padding: 48px 20px; color: var(--text-dim);
+    font-size: 0.85rem; line-height: 1.6;
+  }
+  .summary-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: #0a0a0fee; display: flex; align-items: center;
+    justify-content: center; z-index: 100; padding: 20px;
+  }
+  .summary-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 32px; max-width: 400px; width: 100%;
+    text-align: center;
+  }
+  .summary-card h2 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 1.3rem;
+    margin-bottom: 20px;
+  }
+  .summary-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .summary-stat .label { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+  .summary-stat .val { font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; font-weight: 700; }
+  .btn-primary {
+    background: var(--accent); color: var(--bg); border: none;
+    padding: 12px 24px; border-radius: 8px; font-family: inherit;
+    font-size: 0.85rem; font-weight: 600; cursor: pointer; width: 100%;
+    transition: opacity 0.15s;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .hidden { display: none !important; }
+  @media (max-width: 480px) {
+    .question { font-size: 2.4rem; }
+    .answer-input { font-size: 1.8rem; width: 160px; }
+    .hm-cell, .hm-header { width: 22px; height: 22px; font-size: 0.5rem; }
+  }
+</style>
 </head>
 <body>
-<h1>Math Practice</h1>
-<p class="subtitle">Sharpen your arithmetic skills, one problem at a time.</p>
-<div class="card">
-  <div class="controls">
-    <div class="group">
-      <label for="op-select">Operation</label>
-      <select id="op-select">
-        <option value="mixed">Mixed</option>
-        <option value="+">Addition</option>
-        <option value="-">Subtraction</option>
-        <option value="*">Multiplication</option>
-        <option value="/">Division</option>
-      </select>
-    </div>
-    <div class="group">
-      <label for="difficulty">Max Number: <span id="diff-val">12</span></label>
-      <input type="range" id="difficulty" min="2" max="50" value="12" />
+<div class="app">
+  <div class="header">
+    <h1><span>×</span> Tables</h1>
+    <div class="header-actions">
+      <button id="sessionBtn" title="Session info">0/0</button>
     </div>
   </div>
-  <div id="question">Loading...</div>
-  <input type="number" id="answer-input" placeholder="?" autocomplete="off" />
-  <br />
-  <button id="submit-btn">Check</button>
-  <button id="new-btn">Skip</button>
-  <div id="feedback"></div>
-  <div class="scoreboard">
-    <div class="score-item"><div class="val" id="correct-count">0</div><div class="lbl">Correct</div></div>
-    <div class="score-item"><div class="val" id="streak-count">0</div><div class="lbl">Streak</div></div>
-    <div class="score-item"><div class="val" id="total-count">0</div><div class="lbl">Attempted</div></div>
+  <div class="tabs">
+    <div class="tab active" data-tab="drill">Drill</div>
+    <div class="tab" data-tab="stats">Stats</div>
+    <div class="tab" data-tab="grid">Grid</div>
+    <div class="tab" data-tab="settings">Config</div>
   </div>
-  <div id="streak-bar-wrap"><div id="streak-bar"></div></div>
+  <div id="drill-view">
+    <div class="drill-area">
+      <div class="streak-bar">
+        <span>streak</span>
+        <span class="streak-count" id="streakCount">0</span>
+        <div class="streak-dots" id="streakDots"></div>
+      </div>
+      <div class="question" id="question">—</div>
+      <input type="number" class="answer-input" id="answerInput" autocomplete="off" inputmode="numeric">
+      <div class="feedback" id="feedback">&nbsp;</div>
+      <div class="fact-meta" id="factMeta"></div>
+    </div>
+  </div>
+  <div id="stats-view" class="hidden">
+    <div class="stats-grid" id="statsGrid"></div>
+    <div class="weak-list" id="weakList"></div>
+  </div>
+  <div id="grid-view" class="hidden">
+    <div class="heatmap-section">
+      <h3>Mastery Heatmap</h3>
+      <div class="heatmap-container">
+        <div class="heatmap" id="heatmap"></div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:10px;font-size:0.6rem;color:var(--text-dim);flex-wrap:wrap;">
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--surface);vertical-align:middle;"></span> unseen</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#ff446630;vertical-align:middle;"></span> struggling</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#ffaa3330;vertical-align:middle;"></span> learning</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#00e5a028;vertical-align:middle;"></span> good</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#00e5a044;vertical-align:middle;"></span> mastered</span>
+      </div>
+    </div>
+  </div>
+  <div id="settings-view" class="hidden">
+    <div class="settings-section">
+      <h3>Range</h3>
+      <div class="setting-row">
+        <label>Min factor</label>
+        <input type="number" id="setMin" min="2" max="50" value="2">
+      </div>
+      <div class="setting-row">
+        <label>Max factor</label>
+        <input type="number" id="setMax" min="2" max="50" value="20">
+      </div>
+    </div>
+    <div class="settings-section">
+      <h3>Session</h3>
+      <div class="setting-row">
+        <label>Questions per session</label>
+        <input type="number" id="setSession" min="5" max="100" value="20">
+      </div>
+    </div>
+    <div class="settings-section">
+      <h3>Data</h3>
+      <button class="btn-danger" id="resetBtn">Reset All Progress</button>
+    </div>
+  </div>
+</div>
+<div class="summary-overlay hidden" id="summaryOverlay">
+  <div class="summary-card">
+    <h2>Session Complete</h2>
+    <div class="summary-stats" id="summaryStats"></div>
+    <button class="btn-primary" id="summaryClose">Continue</button>
+  </div>
 </div>
 <script>
-  const ops = ['+','-','*','/'];
-  let currentAnswer = 0, correct = 0, streak = 0, total = 0;
-  const MAX_STREAK = 10;
-  const qEl = document.getElementById('question');
-  const inputEl = document.getElementById('answer-input');
-  const feedbackEl = document.getElementById('feedback');
-  const correctEl = document.getElementById('correct-count');
-  const streakEl = document.getElementById('streak-count');
-  const totalEl = document.getElementById('total-count');
-  const barEl = document.getElementById('streak-bar');
-  const diffEl = document.getElementById('difficulty');
-  const diffValEl = document.getElementById('diff-val');
-  const opEl = document.getElementById('op-select');
-  diffEl.addEventListener('input', () => { diffValEl.textContent = diffEl.value; newQuestion(); });
-  opEl.addEventListener('change', newQuestion);
-  function rand(max) { return Math.floor(Math.random() * max) + 1; }
-  function newQuestion() {
-    feedbackEl.textContent = ''; inputEl.value = ''; inputEl.focus();
-    const max = parseInt(diffEl.value);
-    const opChoice = opEl.value === 'mixed' ? ops[Math.floor(Math.random()*ops.length)] : opEl.value;
-    let a = rand(max), b = rand(max);
-    if (opChoice === '-') { if (b > a) [a,b] = [b,a]; }
-    if (opChoice === '/') { b = rand(max); a = b * rand(max); if (a > 200) a = b * rand(5); }
-    const sym = {'+':'+','-':'−','*':'×','/':'÷'};
-    qEl.textContent = a + ' ' + sym[opChoice] + ' ' + b + ' = ?';
-    if (opChoice==='+') currentAnswer=a+b;
-    else if (opChoice==='-') currentAnswer=a-b;
-    else if (opChoice==='*') currentAnswer=a*b;
-    else currentAnswer=a/b;
+const STORAGE_KEY = 'xt_data_v2';
+const SETTINGS_KEY = 'xt_settings_v1';
+let facts = {};
+let settings = { min: 2, max: 20, sessionLen: 20 };
+let session = { correct: 0, total: 0, times: [], startedAt: null };
+let streak = 0;
+let recentResults = [];
+let currentFact = null;
+let questionStart = 0;
+let feedbackTimeout = null;
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(facts));
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+}
+function load() {
+  try {
+    const d = localStorage.getItem(STORAGE_KEY);
+    if (d) facts = JSON.parse(d);
+    const s = localStorage.getItem(SETTINGS_KEY);
+    if (s) settings = JSON.parse(s);
+  } catch(e) { console.error(e); }
+}
+
+function getFactData(key) {
+  if (!facts[key]) {
+    facts[key] = { ef: 2.5, interval: 0, reps: 0, nextReview: 0, correct: 0, total: 0, avgTime: 0, lastSeen: 0 };
   }
-  function checkAnswer() {
-    const userVal = parseFloat(inputEl.value);
-    if (inputEl.value.trim()===''||isNaN(userVal)) { feedbackEl.textContent='Enter a number first!'; feedbackEl.className='wrong'; return; }
-    total++; totalEl.textContent=total;
-    if (Math.abs(userVal-currentAnswer)<0.001) {
-      correct++; streak++; correctEl.textContent=correct; streakEl.textContent=streak;
-      feedbackEl.textContent = streak>=5 ? '🔥 Correct! On fire!' : '✅ Correct!';
-      feedbackEl.className='correct';
+  return facts[key];
+}
+
+function updateFact(key, correct, timeMs) {
+  const f = getFactData(key);
+  f.total++;
+  f.lastSeen = Date.now();
+  f.avgTime = f.avgTime ? (f.avgTime * 0.7 + timeMs * 0.3) : timeMs;
+  if (correct) {
+    f.correct++;
+    const q = timeMs < 2500 ? 5 : timeMs < 4000 ? 4 : timeMs < 6000 ? 3 : timeMs < 10000 ? 2 : 1;
+    f.ef = Math.max(1.3, f.ef + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02)));
+    if (q >= 3) {
+      f.reps++;
+      if (f.reps === 1) f.interval = 1;
+      else if (f.reps === 2) f.interval = 3;
+      else f.interval = Math.round(f.interval * f.ef);
+      f.nextReview = Date.now() + f.interval * 86400000;
     } else {
-      streak=0; streakEl.textContent=0;
-      feedbackEl.textContent='❌ Not quite. Answer: '+currentAnswer;
-      feedbackEl.className='wrong';
+      f.reps = Math.max(0, f.reps - 1);
+      f.interval = 0;
+      f.nextReview = Date.now() + (q === 2 ? 7200000 : 1800000);
     }
-    barEl.style.width = Math.min(streak/MAX_STREAK*100,100)+'%';
-    setTimeout(newQuestion,1200);
+  } else {
+    f.reps = 0;
+    f.interval = 0;
+    f.ef = Math.max(1.3, f.ef - 0.2);
+    f.nextReview = Date.now() + 600000;
   }
-  document.getElementById('submit-btn').addEventListener('click',checkAnswer);
-  document.getElementById('new-btn').addEventListener('click',newQuestion);
-  inputEl.addEventListener('keydown',e=>{ if(e.key==='Enter') checkAnswer(); });
+  save();
+}
+
+function allFactKeys() {
+  const keys = [];
+  for (let a = settings.min; a <= settings.max; a++) {
+    for (let b = a; b <= settings.max; b++) {
+      if (a <= 10 && b <= 10) continue;
+      keys.push(a + '×' + b);
+    }
+  }
+  return keys;
+}
+
+function pickFact() {
+  const now = Date.now();
+  const keys = allFactKeys();
+  const scored = keys.map(key => {
+    const f = facts[key];
+    if (!f) return { key, score: -1000 + Math.random() * 200 };
+    const overdue = now - f.nextReview;
+    const accuracy = f.total > 0 ? f.correct / f.total : 0.5;
+    const recentPenalty = (now - f.lastSeen) < 30000 ? 8000 : 0;
+    const speedWeakness = f.avgTime ? Math.min(f.avgTime / 10000, 1) : 0.5;
+    let score = -overdue + (accuracy * 1500) - (speedWeakness * 2000) + recentPenalty;
+    return { key, score };
+  });
+  scored.sort((a, b) => a.score - b.score);
+  const pool = scored.slice(0, Math.min(5, scored.length));
+  return pool[Math.floor(Math.random() * pool.length)].key;
+}
+
+function parseFact(key) {
+  const [a, b] = key.split('×').map(Number);
+  return Math.random() < 0.5 ? [a, b] : [b, a];
+}
+
+const $ = id => document.getElementById(id);
+const views = ['drill-view', 'stats-view', 'grid-view', 'settings-view'];
+
+function showView(name) {
+  views.forEach(v => $(v).classList.toggle('hidden', v !== name + '-view'));
+  document.querySelectorAll('.tab').forEach(t =>
+    t.classList.toggle('active', t.dataset.tab === name)
+  );
+  if (name === 'stats') renderStats();
+  if (name === 'grid') renderHeatmap();
+  if (name === 'settings') loadSettings();
+  if (name === 'drill') $('answerInput').focus();
+}
+
+document.querySelectorAll('.tab').forEach(t =>
+  t.addEventListener('click', () => showView(t.dataset.tab))
+);
+
+function newQuestion() {
+  if (session.total >= settings.sessionLen && session.startedAt) {
+    showSessionSummary();
+    return;
+  }
+  currentFact = pickFact();
+  const [a, b] = parseFact(currentFact);
+  $('question').innerHTML = a + ' <span class="op">×</span> ' + b;
+  $('answerInput').value = '';
+  $('answerInput').className = 'answer-input';
+  $('feedback').innerHTML = '&nbsp;';
+  $('answerInput').disabled = false;
+  $('answerInput').focus();
+  questionStart = Date.now();
+  const f = facts[currentFact];
+  if (f && f.total > 0) {
+    const pct = Math.round((f.correct / f.total) * 100);
+    const avg = (f.avgTime / 1000).toFixed(1);
+    $('factMeta').innerHTML = '<span><b>' + pct + '%</b> accuracy</span><span><b>' + avg + 's</b> avg</span><span><b>' + f.total + '</b> seen</span>';
+  } else {
+    $('factMeta').innerHTML = '<span>new fact</span>';
+  }
+  updateSessionBtn();
+}
+
+function submitAnswer() {
+  const val = $('answerInput').value.trim();
+  if (!val) return;
+  const answer = parseInt(val);
+  const [a, b] = currentFact.split('×').map(Number);
+  const correct = answer === a * b;
+  const timeMs = Date.now() - questionStart;
+  if (!session.startedAt) session.startedAt = Date.now();
+  session.total++;
+  if (correct) session.correct++;
+  session.times.push(timeMs);
+  updateFact(currentFact, correct, timeMs);
+  if (correct) { streak++; } else { streak = 0; }
+  recentResults.push(correct);
+  if (recentResults.length > 10) recentResults.shift();
+  renderStreak();
+  $('answerInput').className = 'answer-input ' + (correct ? 'correct' : 'wrong');
+  $('answerInput').disabled = true;
+  if (correct) {
+    const speed = timeMs < 2500 ? '⚡ instant' : timeMs < 4000 ? '✓ quick' : timeMs < 6000 ? '✓ ok' : timeMs < 10000 ? '⏳ slow' : '🐌 too slow';
+    $('feedback').innerHTML = speed + ' · ' + (timeMs/1000).toFixed(1) + 's';
+    $('feedback').className = timeMs < 6000 ? 'feedback correct-fb' : 'feedback slow-fb';
+  } else {
+    $('feedback').innerHTML = a + ' × ' + b + ' = ' + (a * b);
+    $('feedback').className = 'feedback wrong-fb';
+  }
+  updateSessionBtn();
+  clearTimeout(feedbackTimeout);
+  feedbackTimeout = setTimeout(() => newQuestion(), correct ? 600 : 2000);
+}
+
+$('answerInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') submitAnswer();
+});
+
+function renderStreak() {
+  $('streakCount').textContent = streak;
+  const dots = recentResults.slice(-10).map(r =>
+    '<div class="streak-dot ' + (r ? 'correct' : 'wrong') + '"></div>'
+  ).join('');
+  $('streakDots').innerHTML = dots;
+}
+
+function updateSessionBtn() {
+  $('sessionBtn').textContent = session.total + '/' + settings.sessionLen;
+}
+
+function showSessionSummary() {
+  const pct = session.total > 0 ? Math.round((session.correct / session.total) * 100) : 0;
+  const avgTime = session.times.length > 0
+    ? (session.times.reduce((a, b) => a + b, 0) / session.times.length / 1000).toFixed(1)
+    : '—';
+  const elapsed = ((Date.now() - session.startedAt) / 1000).toFixed(0);
+  $('summaryStats').innerHTML =
+    '<div class="summary-stat"><div class="label">Accuracy</div><div class="val" style="color:' + (pct >= 80 ? 'var(--accent)' : pct >= 60 ? 'var(--warn)' : 'var(--danger)') + '">' + pct + '%</div></div>' +
+    '<div class="summary-stat"><div class="label">Avg Speed</div><div class="val" style="color:var(--blue)">' + avgTime + 's</div></div>' +
+    '<div class="summary-stat"><div class="label">Correct</div><div class="val">' + session.correct + '/' + session.total + '</div></div>' +
+    '<div class="summary-stat"><div class="label">Time</div><div class="val">' + elapsed + 's</div></div>';
+  $('summaryOverlay').classList.remove('hidden');
+}
+
+$('summaryClose').addEventListener('click', () => {
+  $('summaryOverlay').classList.add('hidden');
+  session = { correct: 0, total: 0, times: [], startedAt: null };
+  streak = 0;
+  recentResults = [];
+  renderStreak();
   newQuestion();
+});
+
+function renderStats() {
+  const keys = allFactKeys();
+  let totalCorrect = 0, totalAnswered = 0, totalSeen = 0, totalTime = 0, timeCount = 0;
+  keys.forEach(k => {
+    const f = facts[k];
+    if (f && f.total > 0) {
+      totalSeen++;
+      totalCorrect += f.correct;
+      totalAnswered += f.total;
+      totalTime += f.avgTime;
+      timeCount++;
+    }
+  });
+  const overallPct = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
+  const avgSpeed = timeCount > 0 ? (totalTime / timeCount / 1000).toFixed(1) : '—';
+  const coverage = Math.round((totalSeen / keys.length) * 100);
+  let mastered = 0;
+  keys.forEach(k => {
+    const f = facts[k];
+    if (f && f.total >= 3 && (f.correct / f.total) >= 0.9 && f.reps >= 3 && f.avgTime < 4000) mastered++;
+  });
+  $('statsGrid').innerHTML =
+    '<div class="stat-card"><div class="label">Accuracy</div><div class="value ' + (overallPct >= 80 ? 'green' : overallPct >= 60 ? 'yellow' : 'red') + '">' + overallPct + '%</div></div>' +
+    '<div class="stat-card"><div class="label">Avg Speed</div><div class="value blue">' + avgSpeed + 's</div></div>' +
+    '<div class="stat-card"><div class="label">Coverage</div><div class="value">' + coverage + '%</div></div>' +
+    '<div class="stat-card"><div class="label">Mastered</div><div class="value green">' + mastered + '/' + keys.length + '</div></div>';
+  const weak = keys
+    .filter(k => facts[k] && facts[k].total >= 2)
+    .map(k => {
+      const f = facts[k];
+      const pct = Math.round((f.correct / f.total) * 100);
+      const avg = f.avgTime / 1000;
+      const isWeak = pct < 80 || (pct >= 80 && avg > 5);
+      return { key: k, ...f, pct, avg, isWeak, isSlow: pct >= 80 && avg > 5 };
+    })
+    .filter(f => f.isWeak)
+    .sort((a, b) => {
+      if (a.pct < 80 && b.pct >= 80) return -1;
+      if (a.pct >= 80 && b.pct < 80) return 1;
+      if (a.pct < 80 && b.pct < 80) return a.pct - b.pct;
+      return b.avg - a.avg;
+    })
+    .slice(0, 12);
+  if (weak.length > 0) {
+    $('weakList').innerHTML = '<h3>Weak Spots</h3>' + weak.map(w => {
+      const [a, b] = w.key.split('×');
+      const tag = w.isSlow
+        ? '<span class="pct ok">' + w.avg.toFixed(1) + 's</span>'
+        : '<span class="pct ' + (w.pct < 50 ? 'bad' : 'ok') + '">' + w.pct + '%</span>';
+      const reason = w.isSlow ? 'slow' : '';
+      return '<div class="weak-item"><span class="fact">' + a + ' × ' + b + ' = ' + (parseInt(a) * parseInt(b)) + '</span><span class="detail">' + w.correct + '/' + w.total + ' · ' + w.avg.toFixed(1) + 's' + (reason ? ' · ' + reason : '') + '</span>' + tag + '</div>';
+    }).join('');
+  } else {
+    $('weakList').innerHTML = keys.some(k => facts[k] && facts[k].total > 0)
+      ? '<h3>Weak Spots</h3><div class="empty-state">No weak spots yet. Keep drilling.</div>'
+      : '';
+  }
+}
+
+function renderHeatmap() {
+  const min = settings.min, max = settings.max;
+  const size = max - min + 1;
+  let html = '';
+  const cols = size + 1;
+  $('heatmap').style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
+  html += '<div class="hm-header"></div>';
+  for (let b = min; b <= max; b++) {
+    html += '<div class="hm-header">' + b + '</div>';
+  }
+  for (let a = min; a <= max; a++) {
+    html += '<div class="hm-header">' + a + '</div>';
+    for (let b = min; b <= max; b++) {
+      const key = a <= b ? (a + '×' + b) : (b + '×' + a);
+      const f = facts[key];
+      let cls = 'unseen';
+      if (f && f.total > 0) {
+        const pct = f.correct / f.total;
+        const fast = f.avgTime < 4000;
+        if (pct >= 0.9 && f.reps >= 3 && fast) cls = 'mastered';
+        else if (pct >= 0.75 && f.avgTime < 6000) cls = 'good';
+        else if (pct >= 0.5) cls = 'learning';
+        else cls = 'struggling';
+      }
+      html += '<div class="hm-cell ' + cls + '" title="' + a + '×' + b + '=' + (a*b) + '">' + (a*b) + '</div>';
+    }
+  }
+  $('heatmap').innerHTML = html;
+}
+
+function loadSettings() {
+  $('setMin').value = settings.min;
+  $('setMax').value = settings.max;
+  $('setSession').value = settings.sessionLen;
+}
+
+function saveSettings() {
+  const min = Math.max(2, parseInt($('setMin').value) || 2);
+  const max = Math.max(min, parseInt($('setMax').value) || 20);
+  const sessionLen = Math.max(5, parseInt($('setSession').value) || 20);
+  settings = { min, max, sessionLen };
+  save();
+}
+
+$('setMin').addEventListener('change', saveSettings);
+$('setMax').addEventListener('change', saveSettings);
+$('setSession').addEventListener('change', saveSettings);
+
+$('resetBtn').addEventListener('click', () => {
+  if (confirm('Nuke all progress? This is irreversible.')) {
+    facts = {};
+    session = { correct: 0, total: 0, times: [], startedAt: null };
+    streak = 0;
+    recentResults = [];
+    save();
+    renderStreak();
+    newQuestion();
+  }
+});
+
+load();
+loadSettings();
+renderStreak();
+updateSessionBtn();
+newQuestion();
 </script>
 </body>
 </html>
